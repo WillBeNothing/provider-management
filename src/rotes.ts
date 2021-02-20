@@ -1,11 +1,11 @@
 import { Router } from 'express';
+import ProvidersController from './app/controllers/providers-controllers'
 
 const routes = Router();
 
-routes.get('/:message', (req, res) => {
-    const {message} = req.params;
+const Providers = new ProvidersController();
 
-    return res.send(message);
-})
+routes.post('/providers', Providers.create)
+
 
 export default routes;
