@@ -1,11 +1,12 @@
 import {
-    Entity, Column, PrimaryGeneratedColumn, OneToMany, JoinColumn,
-  } from 'typeorm';
+  Entity, Column, PrimaryGeneratedColumn, OneToMany, JoinColumn,
+} from 'typeorm';
 
+import Products from './Products';
 
   @Entity('providers')
-  
-  export default class Providers {
+
+export default class Providers {
       @PrimaryGeneratedColumn('increment')
       id: number;
 
@@ -18,7 +19,15 @@ import {
       @Column()
       website: string;
 
-      @Column()
-      telefone: string;
-    
-  }
+      @Column('simple-array')
+      telefone: string[];
+
+      @OneToMany(() => Products, (product) => product.provider, {
+        cascade: [
+          'remove',
+          'update',
+        ],
+      })
+      @JoinColumn({ name: 'providerID' })
+      products: Products[]
+}

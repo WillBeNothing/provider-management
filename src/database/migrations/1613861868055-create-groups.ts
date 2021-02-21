@@ -1,13 +1,12 @@
 /* eslint-disable linebreak-style */
 /* eslint-disable import/prefer-default-export */
 /* eslint-disable class-methods-use-this */
-
 import { MigrationInterface, QueryRunner, Table } from 'typeorm';
 
-export class createProviders1613775263972 implements MigrationInterface {
+export class createGroups1613861868055 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.createTable(new Table({
-      name: 'providers',
+      name: 'groups',
       columns: [
         {
           name: 'id',
@@ -22,23 +21,11 @@ export class createProviders1613775263972 implements MigrationInterface {
           name: 'name',
           type: 'varchar',
         },
-        {
-          name: 'email',
-          type: 'text',
-        },
-        {
-          name: 'website',
-          type: 'text',
-          isNullable: true,
-        }, {
-          name: 'telefone',
-          type: 'text',
-        },
       ],
     }));
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    queryRunner.dropTable('providers');
+    queryRunner.dropTable('groups');
   }
 }
