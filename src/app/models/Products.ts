@@ -26,4 +26,7 @@ export default class Products {
     @ManyToOne(() => Group, (group) => group.products)
     @JoinColumn({ name: 'groupID' })
     group: Providers;
+
+    @Column()
+    actived: boolean;
 }

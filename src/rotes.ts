@@ -20,4 +20,7 @@ routes.post('/providers', Providers.create);
 routes.post('/groups', Group.create);
 routes.post('/products', Products.create);
 
+routes.put('/products/:id', Products.update);
+routes.put('/providers/:id', Providers.update);
+
 export default routes;

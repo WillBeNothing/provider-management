@@ -4,7 +4,7 @@ import { getRepository } from 'typeorm';
 
 import Providers from '../models/Providers';
 
-export default class CreateProviders {
+export default class Provider {
   async create(req: Request, res: Response) {
     try {
       const {
@@ -48,5 +48,24 @@ export default class CreateProviders {
       console.error(err);
       return res.status(500).json('Internal Error');
     }
+  }
+
+  async update(req: Request, res: Response) {
+
+    const { email, website, telefone } = req.body;
+    const { id }:any = req.params;
+    const ProviderRepository = getRepository(Providers);
+
+    const thereIs = await ProviderRepository.find({ id });
+
+    if(thereIs.length === 0) {
+      return res.status(400).json('The provider does not exist!')
+    }
+
+    await ProviderRepository.update(id, req.body)
+
+    const updated = await ProviderRepository.find({ id });
+
+    return res.status(200).json(updated);
   }
 }

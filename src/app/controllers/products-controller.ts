@@ -81,4 +81,38 @@ export default class Product {
       return res.status(500).json('Internal Error');
   }
   }
+
+  async update (req: Request, res: Response) {
+    const { price,  groupName, productCode, actived } = req.body;
+    const { id }: any = req.params;
+
+    const GroupRepository = getRepository(Group);
+
+    const group  = await GroupRepository.findOne({name: groupName});
+
+    if(!group && groupName) {
+      return res.status(400).json('Check if providers or group exist');
+    }
+
+    const data = {
+      price, 
+      group,
+      productCode,
+      actived
+    };
+
+    const ProductsRepository = getRepository(Products);
+    const thereIs = await ProductsRepository.find( { id } );
+
+    if (thereIs.length === 0) {
+      return res.status(400).json('The product does not exist');
+    }
+
+    await ProductsRepository.update(id, req.body);
+
+    const updated =  await ProductsRepository.findOne(id, {
+      relations: ['group', 'provider'],
+    });
+    return res.status(200).json(updated);
+  }
 }
