@@ -53,7 +53,7 @@ export default class Product {
     try {
       const ProductsRepository = getRepository(Products);
     const products = await ProductsRepository.find({
-      relations: ['groups', 'providers'],
+      relations: ['group', 'provider'],
     });
 
     return res.status(200).json(products);
@@ -68,7 +68,7 @@ export default class Product {
     const { id } = req.params;
     const ProductsRepository = getRepository(Products);
     const product = await ProductsRepository.findOne(id, {
-      relations: ['groups', 'providers'],
+      relations: ['group', 'provider'],
     });
 
     if (!product) {
