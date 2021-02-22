@@ -13,6 +13,8 @@ const Products = new ProductsController();
 routes.get('/providers', Providers.index);
 routes.get('/groups/:id', Group.show);
 routes.get('/groups', Group.index);
+routes.get('/products/:id', Products.show);
+routes.get('/products', Products.index);
 
 routes.post('/providers', Providers.create);
 routes.post('/groups', Group.create);

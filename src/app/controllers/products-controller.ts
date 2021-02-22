@@ -42,4 +42,28 @@ export default class Product {
 
     return res.status(200).json(products);
   }
+
+  // eslint-disable-next-line no-unused-vars
+  async index(req: Request, res: Response) {
+    const ProductsRepository = getRepository(Products);
+    const products = await ProductsRepository.find({
+      relations: ['groups', 'providers'],
+    });
+
+    return res.status(200).json(products);
+  }
+
+  async show(req: Request, res: Response) {
+    const { id } = req.params;
+    const ProductsRepository = getRepository(Products);
+    const product = await ProductsRepository.findOne(id, {
+      relations: ['groups', 'providers'],
+    });
+
+    if (!product) {
+      return res.status(404).json('product wasn\'t found');
+    }
+
+    return res.status(200).json(200);
+  }
 }
