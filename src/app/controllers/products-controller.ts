@@ -7,6 +7,7 @@ import Group from '../models/Group';
 
 export default class Product {
   async create(req: Request, res: Response) {
+   try {
     const {
       name, price, productCode, provider, group,
     } = req.body;
@@ -41,19 +42,29 @@ export default class Product {
     await ProductsRepository.save(products);
 
     return res.status(200).json(products);
+   } catch(err) {
+    console.error(err);
+    return res.status(500).json('Internal Error');
+   }
   }
 
   // eslint-disable-next-line no-unused-vars
   async index(req: Request, res: Response) {
-    const ProductsRepository = getRepository(Products);
+    try {
+      const ProductsRepository = getRepository(Products);
     const products = await ProductsRepository.find({
       relations: ['groups', 'providers'],
     });
 
     return res.status(200).json(products);
+    } catch(err) {
+      console.error(err);
+      return res.status(500).json('Internal Error');
+    }
   }
 
   async show(req: Request, res: Response) {
+  try {
     const { id } = req.params;
     const ProductsRepository = getRepository(Products);
     const product = await ProductsRepository.findOne(id, {
@@ -65,5 +76,9 @@ export default class Product {
     }
 
     return res.status(200).json(200);
+  } catch (err) {
+    console.error(err);
+      return res.status(500).json('Internal Error');
+  }
   }
 }
