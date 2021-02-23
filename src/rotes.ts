@@ -3,24 +3,30 @@ import { Router } from 'express';
 import GroupController from './app/controllers/group-controller';
 import ProvidersController from './app/controllers/providers-controllers';
 import ProductsController from './app/controllers/products-controller';
+import UsersControllers from './app/controllers/user-controllers';
+
+import auth from './app/middlewares/auth';
 
 const routes = Router();
 
 const Providers = new ProvidersController();
 const Group = new GroupController();
 const Products = new ProductsController();
+const Users = new UsersControllers();
 
-routes.get('/providers', Providers.index);
-routes.get('/groups/:id', Group.show);
-routes.get('/groups', Group.index);
-routes.get('/products/:id', Products.show);
-routes.get('/products', Products.index);
+routes.get('/providers', auth, Providers.index);
+routes.get('/groups/:id', auth, Group.show);
+routes.get('/groups', auth, Group.index);
+routes.get('/products/:id', auth, Products.show);
+routes.get('/products', auth, Products.index);
 
-routes.post('/providers', Providers.create);
-routes.post('/groups', Group.create);
-routes.post('/products', Products.create);
+routes.post('/providers', auth, Providers.create);
+routes.post('/groups', auth, Group.create);
+routes.post('/products', auth, Products.create);
+routes.post('/register', Users.store);
+routes.post('/login', Users.session);
 
-routes.put('/products/:id', Products.update);
-routes.put('/providers/:id', Providers.update);
+routes.put('/products/:id', auth, Products.update);
+routes.put('/providers/:id', auth, Providers.update);
 
 export default routes;

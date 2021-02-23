@@ -1,3 +1,7 @@
+/* eslint-disable no-plusplus */
+/* eslint-disable no-const-assign */
+/* eslint-disable consistent-return */
+/* eslint-disable array-callback-return */
 import { Request, Response } from 'express';
 import { getRepository } from 'typeorm';
 
@@ -7,102 +11,108 @@ import Group from '../models/Group';
 
 export default class Product {
   async create(req: Request, res: Response) {
-   try {
-    const {
-      name, price, productCode, provider, group,
-    } = req.body;
+    try {
+      const {
+        name, price, productCode, provider, group,
+      } = req.body;
 
-    const ProductsRepository = getRepository(Products);
-    const ProviderRepository = getRepository(Providers);
-    const GroupRepository = getRepository(Group);
+      const ProductsRepository = getRepository(Products);
+      const ProviderRepository = getRepository(Providers);
+      const GroupRepository = getRepository(Group);
 
-    const providerID = await ProviderRepository.findOne({ name: provider });
-    const groupID = await GroupRepository.findOne({ name: group });
+      const providerID = await ProviderRepository.findOne({ name: provider });
+      const groupID = await GroupRepository.findOne({ name: group });
 
-    if (!providerID || !groupID) {
-      return res.status(400).json('Check if providers or group exist');
+      if (!providerID || !groupID) {
+        return res.status(400).json('Check if providers or group exist');
+      }
+
+      const thereIs = await ProductsRepository.find({ where: { name }, relations: ['provider', 'group'] });
+
+      let canContinue = true;
+      const check = () => {
+        thereIs.forEach((product) => {
+          if (thereIs.length > 0 && product.provider.id === providerID.id && canContinue) {
+            canContinue = false;
+            return res.json({ error: 'Duplicating products' }).status(400);
+          }
+          return false;
+        });
+      };
+
+      check();
+
+      const data = {
+        name,
+        price,
+        productCode,
+        provider: providerID,
+        group: groupID,
+      };
+
+      if (canContinue) {
+        const products = ProductsRepository.create(data);
+
+        await ProductsRepository.save(products);
+
+        return res.status(200).json(products);
+      }
+    } catch (err) {
+      console.error(err);
+      return res.status(500).json('Internal Error');
     }
-
-    const thereIs = await ProductsRepository.find({ name });
-
-    if (thereIs.length !== 0) {
-      return res.status(400).json({ error: `The product ${name} was already created!` });
-    }
-
-    const data = {
-      name,
-      price,
-      productCode,
-      provider: providerID,
-      group: groupID,
-    };
-
-    const products = ProductsRepository.create(data);
-
-    await ProductsRepository.save(products);
-
-    return res.status(200).json(products);
-   } catch(err) {
-    console.error(err);
-    return res.status(500).json('Internal Error');
-   }
   }
 
   // eslint-disable-next-line no-unused-vars
   async index(req: Request, res: Response) {
     try {
       const ProductsRepository = getRepository(Products);
-    const products = await ProductsRepository.find({
-      relations: ['group', 'provider'],
-    });
+      const products = await ProductsRepository.find({
+        relations: ['group', 'provider'],
+      });
 
-    return res.status(200).json(products);
-    } catch(err) {
+      return res.status(200).json(products);
+    } catch (err) {
       console.error(err);
       return res.status(500).json('Internal Error');
     }
   }
 
   async show(req: Request, res: Response) {
-  try {
-    const { id } = req.params;
-    const ProductsRepository = getRepository(Products);
-    const product = await ProductsRepository.findOne(id, {
-      relations: ['group', 'provider'],
-    });
+    try {
+      const { id } = req.params;
+      const ProductsRepository = getRepository(Products);
+      const product = await ProductsRepository.findOne(id, {
+        relations: ['group', 'provider'],
+      });
 
-    if (!product) {
-      return res.status(404).json('product wasn\'t found');
-    }
+      if (!product) {
+        return res.status(404).json('product wasn\'t found');
+      }
 
-    return res.status(200).json(200);
-  } catch (err) {
-    console.error(err);
+      return res.status(200).json(product);
+    } catch (err) {
+      console.error(err);
       return res.status(500).json('Internal Error');
-  }
+    }
   }
 
-  async update (req: Request, res: Response) {
-    const { price,  groupName, productCode, actived } = req.body;
+  async update(req: Request, res: Response) {
+    const {
+      groupName,
+    } = req.body;
     const { id }: any = req.params;
 
     const GroupRepository = getRepository(Group);
 
-    const group  = await GroupRepository.findOne({name: groupName});
+    const group = await GroupRepository.findOne({ name: groupName });
 
-    if(!group && groupName) {
+    if (!group && groupName) {
       return res.status(400).json('Check if providers or group exist');
     }
 
-    const data = {
-      price, 
-      group,
-      productCode,
-      actived
-    };
-
     const ProductsRepository = getRepository(Products);
-    const thereIs = await ProductsRepository.find( { id } );
+    const thereIs = await ProductsRepository.find({ id });
 
     if (thereIs.length === 0) {
       return res.status(400).json('The product does not exist');
@@ -110,7 +120,7 @@ export default class Product {
 
     await ProductsRepository.update(id, req.body);
 
-    const updated =  await ProductsRepository.findOne(id, {
+    const updated = await ProductsRepository.findOne(id, {
       relations: ['group', 'provider'],
     });
     return res.status(200).json(updated);

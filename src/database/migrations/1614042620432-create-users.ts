@@ -3,10 +3,10 @@
 /* eslint-disable class-methods-use-this */
 import { MigrationInterface, QueryRunner, Table } from 'typeorm';
 
-export class createGroups1613861868055 implements MigrationInterface {
+export class createUsers1614042620432 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.createTable(new Table({
-      name: 'groups',
+      name: 'users',
       columns: [
         {
           name: 'id',
@@ -15,17 +15,20 @@ export class createGroups1613861868055 implements MigrationInterface {
           isPrimary: true,
           isGenerated: true,
           generationStrategy: 'increment',
-
         },
         {
           name: 'name',
           type: 'varchar',
+        },
+        {
+          name: 'password_hash',
+          type: 'text',
         },
       ],
     }));
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    queryRunner.dropTable('groups');
+    await queryRunner.dropTable('users');
   }
 }
