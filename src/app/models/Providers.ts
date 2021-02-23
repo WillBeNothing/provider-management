@@ -13,8 +13,8 @@ export default class Providers {
       @Column()
       name: string;
 
-      @Column()
-      email: string;
+      @Column('simple-array')
+      email: string[];
 
       @Column()
       website: string;

@@ -1,4 +1,3 @@
-import util from 'util';
 import * as JWT from 'jsonwebtoken';
 import { NextFunction, Response, Request } from 'express';
 
