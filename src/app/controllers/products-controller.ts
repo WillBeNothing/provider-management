@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 /* eslint-disable no-plusplus */
 /* eslint-disable no-const-assign */
 /* eslint-disable consistent-return */
@@ -8,14 +9,14 @@ import { getRepository } from 'typeorm';
 import Products from '../models/Products';
 import Providers from '../models/Providers';
 import Group from '../models/Group';
-import ProductsView from '../../views/ProcuctsView'
+import ProductsView from '../../views/ProcuctsView';
+
 export default class Product {
   async create(req: Request, res: Response) {
     try {
       const {
         name, price, productCode, provider, group,
       } = req.body;
-
 
       const ProductsRepository = getRepository(Products);
       const ProviderRepository = getRepository(Providers);
@@ -24,10 +25,15 @@ export default class Product {
       const providerID = await ProviderRepository.findOne({ name: provider });
       const groupID = await GroupRepository.findOne({ name: group });
 
-      
       // eslint-disable-next-line no-undef
       const requestImage = req.files as Express.Multer.File[];
-      const images = requestImage.map((image) => ({path: image.filename}))
+      // eslint-disable-next-line no-return-assign
+      const images = requestImage.map((image) => (
+        {
+          name: image.originalname,
+          size: image.size,
+          url: image.path,
+        }));
 
       if (!providerID || !groupID) {
         return res.status(400).json('Check if providers or group exist');
@@ -61,7 +67,6 @@ export default class Product {
         const products = ProductsRepository.create(data);
 
         await ProductsRepository.save(products);
-        
 
         return res.status(200).json(ProductsView.render(products));
       }
@@ -135,7 +140,7 @@ export default class Product {
     if (!product) {
       return res.status(404).json('product wasn\'t found');
     }
-    
+
     return res.status(200).json(ProductsView.render(product));
   }
 }

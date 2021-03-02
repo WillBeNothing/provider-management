@@ -10,7 +10,13 @@ export default class Images {
     id: number;
 
     @Column()
-    path: string;
+    name: string;
+
+    @Column()
+    size: number;
+
+    @Column()
+    url: string;
 
     @ManyToOne(() => Products, (product) => product.images)
     @JoinColumn({ name: 'productID' })

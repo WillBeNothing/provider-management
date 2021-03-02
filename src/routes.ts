@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import multer from 'multer'
+import multer from 'multer';
 
 import GroupController from './app/controllers/group-controller';
 import ProvidersController from './app/controllers/providers-controllers';
@@ -7,10 +7,10 @@ import ProductsController from './app/controllers/products-controller';
 import UsersControllers from './app/controllers/user-controllers';
 
 import auth from './app/middlewares/auth';
-import ConfigsUpload from './config/upload'
+import ConfigsUpload from './config/upload';
 
 const routes = Router();
-const upload = multer(ConfigsUpload)
+const upload = multer(ConfigsUpload);
 
 const Providers = new ProvidersController();
 const Group = new GroupController();
