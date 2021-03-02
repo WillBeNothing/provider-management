@@ -4,6 +4,9 @@ import { getRepository } from 'typeorm';
 
 import Providers from '../models/Providers';
 
+import ProvidersView from '../../views/ProvidersView'
+import upload from '../../config/upload';
+
 export default class Provider {
   async create(req: Request, res: Response) {
     try {
@@ -29,7 +32,7 @@ export default class Provider {
   
       await ProvidersRepository.save(providers);
   
-      return res.status(200).json(providers);
+      return res.status(200).json(ProvidersView.render(providers));
     } catch (err) {
       console.error(err);
       return res.status(500).json('Internal Error');
@@ -43,7 +46,7 @@ export default class Provider {
       relations: ['products'],
     });
 
-    return res.json(GotProviders).status(200);
+    return res.json(ProvidersView.renderMany(GotProviders)).status(200);
     } catch (err) {
       console.error(err);
       return res.status(500).json('Internal Error');
@@ -52,7 +55,6 @@ export default class Provider {
 
   async update(req: Request, res: Response) {
 
-    const { email, website, telefone } = req.body;
     const { id }:any = req.params;
     const ProviderRepository = getRepository(Providers);
 
@@ -64,8 +66,14 @@ export default class Provider {
 
     await ProviderRepository.update(id, req.body)
 
-    const updated = await ProviderRepository.find({ id });
+    const updated = await ProviderRepository.findOne(id, {
+      relations: ['products']
+    });
 
-    return res.status(200).json(updated);
+    if (!updated) {
+      return res.status(400).json('Can\'t upload provider')
+    }
+
+    return res.status(200).json(ProvidersView.render(updated));
   }
 }

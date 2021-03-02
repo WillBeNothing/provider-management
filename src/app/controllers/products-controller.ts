@@ -8,13 +8,14 @@ import { getRepository } from 'typeorm';
 import Products from '../models/Products';
 import Providers from '../models/Providers';
 import Group from '../models/Group';
-
+import ProductsView from '../../views/ProcuctsView'
 export default class Product {
   async create(req: Request, res: Response) {
     try {
       const {
         name, price, productCode, provider, group,
       } = req.body;
+
 
       const ProductsRepository = getRepository(Products);
       const ProviderRepository = getRepository(Providers);
@@ -23,9 +24,10 @@ export default class Product {
       const providerID = await ProviderRepository.findOne({ name: provider });
       const groupID = await GroupRepository.findOne({ name: group });
 
+      
       // eslint-disable-next-line no-undef
-      const requestImages = req.files as Express.Multer.File[];
-      const images = requestImages.map((image) => ({ path: image.filename }));
+      const requestImage = req.files as Express.Multer.File[];
+      const images = requestImage.map((image) => ({path: image.filename}))
 
       if (!providerID || !groupID) {
         return res.status(400).json('Check if providers or group exist');
@@ -59,8 +61,9 @@ export default class Product {
         const products = ProductsRepository.create(data);
 
         await ProductsRepository.save(products);
+        
 
-        return res.status(200).json(products);
+        return res.status(200).json(ProductsView.render(products));
       }
     } catch (err) {
       console.error(err);
@@ -73,10 +76,10 @@ export default class Product {
     try {
       const ProductsRepository = getRepository(Products);
       const products = await ProductsRepository.find({
-        relations: ['group', 'provider'],
+        relations: ['group', 'provider', 'images'],
       });
 
-      return res.status(200).json(products);
+      return res.status(200).json(ProductsView.renderMany(products));
     } catch (err) {
       console.error(err);
       return res.status(500).json('Internal Error');
@@ -88,14 +91,14 @@ export default class Product {
       const { id } = req.params;
       const ProductsRepository = getRepository(Products);
       const product = await ProductsRepository.findOne(id, {
-        relations: ['group', 'provider'],
+        relations: ['group', 'provider', 'images'],
       });
 
       if (!product) {
         return res.status(404).json('product wasn\'t found');
       }
 
-      return res.status(200).json(product);
+      return res.status(200).json(ProductsView.render(product));
     } catch (err) {
       console.error(err);
       return res.status(500).json('Internal Error');
@@ -125,9 +128,14 @@ export default class Product {
 
     await ProductsRepository.update(id, req.body);
 
-    const updated = await ProductsRepository.findOne(id, {
-      relations: ['group', 'provider'],
+    const product = await ProductsRepository.findOne(id, {
+      relations: ['group', 'provider', 'images'],
     });
-    return res.status(200).json(updated);
+
+    if (!product) {
+      return res.status(404).json('product wasn\'t found');
+    }
+    
+    return res.status(200).json(ProductsView.render(product));
   }
 }
