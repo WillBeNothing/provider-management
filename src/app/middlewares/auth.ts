@@ -1,5 +1,4 @@
-import util from 'util';
-import jwt from 'jsonwebtoken';
+import * as JWT from 'jsonwebtoken';
 import { NextFunction, Response, Request } from 'express';
 
 import 'dotenv/config';
@@ -14,7 +13,7 @@ export default async (req: Request, res: Response, next: NextFunction) => {
 
   try {
     const auth: any = process.env.AUTH_SECRET?.toString();
-    const decoded: any = await util.promisify(jwt.verify)(token, auth);
+    const decoded: any = await JWT.verify(token, auth);
     if (!decoded) {
       return res.status(401).json({ error: 'Unatourizated' });
     }
