@@ -23,6 +23,10 @@ export default class Product {
       const providerID = await ProviderRepository.findOne({ name: provider });
       const groupID = await GroupRepository.findOne({ name: group });
 
+      // eslint-disable-next-line no-undef
+      const requestImages = req.files as Express.Multer.File[];
+      const images = requestImages.map((image) => ({ path: image.filename }));
+
       if (!providerID || !groupID) {
         return res.status(400).json('Check if providers or group exist');
       }
@@ -48,6 +52,7 @@ export default class Product {
         productCode,
         provider: providerID,
         group: groupID,
+        images,
       };
 
       if (canContinue) {

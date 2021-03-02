@@ -1,9 +1,10 @@
 import {
-  Entity, Column, PrimaryGeneratedColumn, ManyToOne, JoinColumn,
+  Entity, Column, PrimaryGeneratedColumn, ManyToOne, JoinColumn, OneToOne,
 } from 'typeorm';
 
 import Providers from './Providers';
 import Group from './Group';
+import Image from './Images';
 
 @Entity('products')
 export default class Products {
@@ -26,6 +27,10 @@ export default class Products {
     @ManyToOne(() => Group, (group) => group.products)
     @JoinColumn({ name: 'groupID' })
     group: Providers;
+
+    @OneToOne(() => Image, (image) => image.product)
+    @JoinColumn({ name: 'imageID' })
+    images: Image[];
 
     @Column()
     actived: boolean;
