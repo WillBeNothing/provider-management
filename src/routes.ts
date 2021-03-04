@@ -5,11 +5,12 @@ import GroupController from './app/controllers/group-controller';
 import ProvidersController from './app/controllers/providers-controllers';
 import ProductsController from './app/controllers/products-controller';
 import UsersControllers from './app/controllers/user-controllers';
+import ConfigUpload from './config/upload';
 
 import auth from './app/middlewares/auth';
 
 const routes = Router();
-const upload = multer();
+const upload = multer(ConfigUpload);
 
 const Providers = new ProvidersController();
 const Group = new GroupController();
@@ -24,7 +25,7 @@ routes.get('/products', auth, Products.index);
 
 routes.post('/providers', auth, Providers.create);
 routes.post('/groups', auth, Group.create);
-routes.post('/products', auth, upload.single('file'), Products.create);
+routes.post('/products', auth, upload.single('image'), Products.create);
 routes.post('/register', Users.store);
 routes.post('/login', Users.session);
 

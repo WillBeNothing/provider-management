@@ -25,17 +25,19 @@ export default class Product {
       const providerID = await ProviderRepository.findOne({ name: provider });
       const groupID = await GroupRepository.findOne({ name: group });
 
+      if (!providerID || !groupID || !req.file) {
+        return res.status(400).json('Check if providers or group exist');
+      }
+
       // eslint-disable-next-line no-undef
-      const { path } = req.file as Express.Multer.File;
+      const imageProps = req.file as Express.Multer.File;
+
+      console.log(req.file.path);
       // eslint-disable-next-line no-return-assign
       const images = {
         name: `${name}:${provider}`,
-        url: path,
+        url: imageProps.path,
       };
-
-      if (!providerID || !groupID) {
-        return res.status(400).json('Check if providers or group exist');
-      }
 
       const thereIs = await ProductsRepository.find({ where: { name }, relations: ['provider', 'group'] });
 

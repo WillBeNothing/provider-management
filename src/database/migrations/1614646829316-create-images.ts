@@ -21,10 +21,6 @@ export class createImages1614646829316 implements MigrationInterface {
           type: 'varchar',
         },
         {
-          name: 'size',
-          type: 'decimal',
-        },
-        {
           name: 'url',
           type: 'varchar',
         },

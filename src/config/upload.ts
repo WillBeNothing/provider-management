@@ -25,12 +25,13 @@ export default {
   fileFilter: (req: any, file: any, cb: any) => {
     const allowedMimes = [
       'image/jpeg',
+      'image/jpg',
       'image/pjpeg',
       'image/png',
       'image/gif',
     ];
 
-    if (allowedMimes.includes(file.mimetype)) {
+    if (allowedMimes.includes(file.mimetype) || !req.file) {
       cb(null, true);
     } else {
       cb(new Error('Invalid file type'));
