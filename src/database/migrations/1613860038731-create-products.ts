@@ -31,8 +31,9 @@ export class createProducts1613860038731 implements MigrationInterface {
           isNullable: true,
         },
         {
-          name: 'currency',
-          type: 'varchar',
+          name: 'isDollar',
+          type: 'bool',
+          default: false,
         },
         {
           name: 'providerID',

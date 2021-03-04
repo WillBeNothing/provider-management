@@ -9,7 +9,7 @@ interface ProductProps{
     group: string,
     provider: string,
     image: string,
-    currency: string,
+    isDollar: boolean,
 }
 
 export default {
@@ -23,7 +23,7 @@ export default {
       image: product.images.url,
       provider: product.provider.name,
       group: product.group.name,
-      currency: product.currency,
+      isDollar: product.isDollar,
     };
   },
 

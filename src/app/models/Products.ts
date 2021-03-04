@@ -21,7 +21,7 @@ export default class Products {
     productCode: string;
 
     @Column()
-    currency: string;
+    isDollar: boolean;
 
     @ManyToOne(() => Providers, (provider) => provider.products)
     @JoinColumn({ name: 'providerID' })

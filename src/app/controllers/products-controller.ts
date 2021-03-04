@@ -15,7 +15,7 @@ export default class Product {
   async create(req: Request, res: Response) {
     try {
       const {
-        name, price, productCode, provider, group, currency,
+        name, price, productCode, provider, group, isDollar, actived,
       } = req.body;
 
       const ProductsRepository = getRepository(Products);
@@ -58,7 +58,8 @@ export default class Product {
         name,
         price,
         productCode,
-        currency: currency || 'real',
+        isDollar,
+        actived,
         provider: providerID,
         group: groupID,
         images,
