@@ -70,8 +70,8 @@ export default class Product {
         return res.status(200).json(ProductsView.render(products));
       }
     } catch (err) {
-      // eslint-disable-next-line no-new
-      new Error(err);
+      // eslint-disable-next-line no-console
+      console.error(err);
       return res.status(500).json('Internal Error');
     }
   }
@@ -86,8 +86,8 @@ export default class Product {
 
       return res.status(200).json(ProductsView.renderMany(products));
     } catch (err) {
-      // eslint-disable-next-line no-new
-      new Error(err);
+      // eslint-disable-next-line no-console
+      console.error(err);
       return res.status(500).json('Internal Error');
     }
   }
@@ -106,8 +106,8 @@ export default class Product {
 
       return res.status(200).json(ProductsView.render(product));
     } catch (err) {
-      // eslint-disable-next-line no-new
-      new Error(err);
+      // eslint-disable-next-line no-console
+      console.error(err);
       return res.status(500).json('Internal Error');
     }
   }
