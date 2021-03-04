@@ -13,10 +13,13 @@ cloudinaryV2.config({
 export default {
   storage: new CloudinaryStorage({
     cloudinary: cloudinaryV2,
-    params: (req, file) => ({
-      folder: 'products',
-      public_id: `${new Date().toISOString()}-${file.originalname}`,
-    }),
+    params: (req) => {
+      const { name, provider } = req.body;
+      return {
+        folder: 'products',
+        public_id: `${name}:${provider}`,
+      };
+    },
   }),
   limits: { fileSize: 1024 * 1024 * 5 },
   fileFilter: (req: any, file: any, cb: any) => {

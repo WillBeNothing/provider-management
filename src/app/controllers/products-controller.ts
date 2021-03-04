@@ -15,7 +15,7 @@ export default class Product {
   async create(req: Request, res: Response) {
     try {
       const {
-        name, price, productCode, provider, group,
+        name, price, productCode, provider, group, currency,
       } = req.body;
 
       const ProductsRepository = getRepository(Products);
@@ -26,14 +26,12 @@ export default class Product {
       const groupID = await GroupRepository.findOne({ name: group });
 
       // eslint-disable-next-line no-undef
-      const requestImage = req.files as Express.Multer.File[];
+      const { path } = req.file as Express.Multer.File;
       // eslint-disable-next-line no-return-assign
-      const images = requestImage.map((image) => (
-        {
-          name: image.originalname,
-          size: image.size,
-          url: image.path,
-        }));
+      const images = {
+        name: `${name}:${provider}`,
+        url: path,
+      };
 
       if (!providerID || !groupID) {
         return res.status(400).json('Check if providers or group exist');
@@ -58,6 +56,7 @@ export default class Product {
         name,
         price,
         productCode,
+        currency: currency || 'real',
         provider: providerID,
         group: groupID,
         images,
@@ -71,7 +70,8 @@ export default class Product {
         return res.status(200).json(ProductsView.render(products));
       }
     } catch (err) {
-      console.error(err);
+      // eslint-disable-next-line no-new
+      new Error(err);
       return res.status(500).json('Internal Error');
     }
   }
@@ -86,7 +86,8 @@ export default class Product {
 
       return res.status(200).json(ProductsView.renderMany(products));
     } catch (err) {
-      console.error(err);
+      // eslint-disable-next-line no-new
+      new Error(err);
       return res.status(500).json('Internal Error');
     }
   }
@@ -105,7 +106,8 @@ export default class Product {
 
       return res.status(200).json(ProductsView.render(product));
     } catch (err) {
-      console.error(err);
+      // eslint-disable-next-line no-new
+      new Error(err);
       return res.status(500).json('Internal Error');
     }
   }

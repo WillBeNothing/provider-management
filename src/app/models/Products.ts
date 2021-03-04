@@ -1,5 +1,5 @@
 import {
-  Entity, Column, PrimaryGeneratedColumn, ManyToOne, JoinColumn, OneToOne, OneToMany,
+  Entity, Column, PrimaryGeneratedColumn, ManyToOne, JoinColumn, OneToOne, JoinTable,
 } from 'typeorm';
 
 import Providers from './Providers';
@@ -20,6 +20,9 @@ export default class Products {
     @Column()
     productCode: string;
 
+    @Column()
+    currency: string;
+
     @ManyToOne(() => Providers, (provider) => provider.products)
     @JoinColumn({ name: 'providerID' })
     provider: Providers;
@@ -28,14 +31,14 @@ export default class Products {
     @JoinColumn({ name: 'groupID' })
     group: Providers;
 
-    @OneToMany(() => Images, (image) => image.product, {
+    @OneToOne(() => Images, (image) => image.product, {
       cascade: [
         'insert',
-        'update'
-      ]
+        'update',
+      ],
     })
-    @JoinColumn({name: 'productID'})
-    images: Images[];
+    @JoinTable({ name: 'images', joinColumn: { name: 'productID' } })
+    images: Images;
 
     @Column()
     actived: boolean;

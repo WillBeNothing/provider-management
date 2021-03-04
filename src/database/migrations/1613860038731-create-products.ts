@@ -29,7 +29,12 @@ export class createProducts1613860038731 implements MigrationInterface {
           name: 'productCode',
           type: 'text',
           isNullable: true,
-        }, {
+        },
+        {
+          name: 'currency',
+          type: 'varchar',
+        },
+        {
           name: 'providerID',
           type: 'integer',
         },
