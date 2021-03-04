@@ -58,7 +58,7 @@ export default class Product {
         name,
         price,
         productCode,
-        isDollar,
+        isDollar: isDollar === 'true',
         actived,
         provider: providerID,
         group: groupID,
