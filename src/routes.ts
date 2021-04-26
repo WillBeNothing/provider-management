@@ -29,7 +29,7 @@ routes.post('/products', auth, upload.single('image'), Products.create);
 routes.post('/register', Users.store);
 routes.post('/login', Users.session);
 
-routes.put('/products/:id', auth, Products.update);
+routes.put('/products/:id', upload.single('image'), auth, Products.update);
 routes.put('/providers/:id', auth, Providers.update);
 
 export default routes;

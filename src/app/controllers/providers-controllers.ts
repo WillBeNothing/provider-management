@@ -1,6 +1,6 @@
 /* eslint-disable class-methods-use-this */
 import { Request, Response } from 'express';
-import { getRepository } from 'typeorm';
+import { getRepository, Like } from 'typeorm';
 
 import Providers from '../models/Providers';
 
@@ -25,7 +25,7 @@ export default class Provider {
         name,
       });
       if (thereIs.length !== 0) {
-        return res.status(400).json({ error: `The user ${name} was already created!` });
+        return res.status(400).json({ error: 'Duplicated providers' });
       }
       const providers = ProvidersRepository.create(data);
 
@@ -41,9 +41,24 @@ export default class Provider {
   async index(req:Request, res: Response) {
     try {
       const ProvidersRepository = getRepository(Providers);
-      const GotProviders = await ProvidersRepository.find({
+      let GotProviders = await ProvidersRepository.find({
         relations: ['products'],
+        order: {
+          name: 'ASC',
+        },
       });
+
+      if (JSON.stringify(req.query) !== '{}') {
+        const { name } = req.query;
+
+        GotProviders = await ProvidersRepository.find({
+          where: { name: Like(`%${name}%`) },
+          relations: ['products'],
+          order: {
+            name: 'ASC',
+          },
+        });
+      }
 
       return res.json(ProvidersView.renderMany(GotProviders)).status(200);
     } catch (err) {
@@ -66,6 +81,9 @@ export default class Provider {
 
     const updated = await ProviderRepository.findOne(id, {
       relations: ['products'],
+      order: {
+        name: 'ASC',
+      },
     });
 
     if (!updated) {

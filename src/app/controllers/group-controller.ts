@@ -34,6 +34,9 @@ export default class Group {
       const GroupRepository = getRepository(GroupModel);
       const group = await GroupRepository.findOne(id, {
         relations: ['products'],
+        order: {
+          name: 'ASC',
+        },
       });
 
       return res.status(200).json(group);
@@ -47,7 +50,11 @@ export default class Group {
   async index(req: Request, res: Response) {
     try {
       const GroupRepository = getRepository(GroupModel);
-      const group = await GroupRepository.find();
+      const group = await GroupRepository.find({
+        order: {
+          name: 'ASC',
+        },
+      });
 
       return res.status(200).json(group);
     } catch (err) {

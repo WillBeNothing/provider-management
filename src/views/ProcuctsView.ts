@@ -6,8 +6,8 @@ interface ProductProps{
     price: number,
     productCode: string,
     actived: boolean,
-    group: string,
-    provider: string,
+    group: Object,
+    provider: Object,
     image: string,
     isDollar: boolean,
 }
@@ -21,8 +21,14 @@ export default {
       productCode: product.productCode,
       actived: product.actived,
       image: product.images.url,
-      provider: product.provider.name,
-      group: product.group.name,
+      provider: {
+        id: product.provider.id,
+        name: product.provider.name,
+      },
+      group: {
+        id: product.group.id,
+        name: product.group.name,
+      },
       isDollar: product.isDollar,
     };
   },

@@ -15,7 +15,12 @@ export default class Images {
     @Column()
     url: string;
 
-    @OneToOne(() => Products, (product) => product.images)
+    @OneToOne(() => Products, (product) => product.images, {
+      cascade: [
+        'remove',
+        'update',
+      ],
+    })
     @JoinColumn({ name: 'productID' })
     product: Products;
 }

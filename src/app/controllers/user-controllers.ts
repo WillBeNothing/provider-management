@@ -37,6 +37,8 @@ export default class User {
   async session(req: Request, res: Response) {
     const { name, password } = req.body;
 
+    console.log(name);
+
     const UserRepository = getRepository(Users);
     const user = await UserRepository.findOne({ name });
 

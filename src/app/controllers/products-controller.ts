@@ -4,11 +4,13 @@
 /* eslint-disable consistent-return */
 /* eslint-disable array-callback-return */
 import { Request, Response } from 'express';
-import { getRepository } from 'typeorm';
+import { getRepository, Like } from 'typeorm';
 
 import Products from '../models/Products';
 import Providers from '../models/Providers';
 import Group from '../models/Group';
+import Image from '../models/Images';
+
 import ProductsView from '../../views/ProcuctsView';
 
 export default class Product {
@@ -31,8 +33,6 @@ export default class Product {
 
       // eslint-disable-next-line no-undef
       const imageProps = req.file as Express.Multer.File;
-
-      console.log(req.file.path);
       // eslint-disable-next-line no-return-assign
       const images = {
         name: `${name}:${provider}`,
@@ -56,7 +56,7 @@ export default class Product {
 
       const data = {
         name,
-        price,
+        price: Number(price.replace(',', '.')),
         productCode,
         isDollar: isDollar === 'true',
         actived,
@@ -83,9 +83,26 @@ export default class Product {
   async index(req: Request, res: Response) {
     try {
       const ProductsRepository = getRepository(Products);
-      const products = await ProductsRepository.find({
+      let products = await ProductsRepository.find({
         relations: ['group', 'provider', 'images'],
+        order: {
+          actived: 'DESC',
+          name: 'ASC',
+        },
       });
+
+      if (JSON.stringify(req.query) !== '{}') {
+        const { name } = req.query;
+
+        products = await ProductsRepository.find({
+          where: { name: Like(`%${name}%`) },
+          relations: ['images', 'provider', 'group'],
+          order: {
+            actived: 'DESC',
+            name: 'ASC',
+          },
+        });
+      }
 
       return res.status(200).json(ProductsView.renderMany(products));
     } catch (err) {
@@ -101,6 +118,10 @@ export default class Product {
       const ProductsRepository = getRepository(Products);
       const product = await ProductsRepository.findOne(id, {
         relations: ['group', 'provider', 'images'],
+        order: {
+          actived: 'DESC',
+          name: 'ASC',
+        },
       });
 
       if (!product) {
@@ -117,15 +138,16 @@ export default class Product {
 
   async update(req: Request, res: Response) {
     const {
-      groupName,
+      group,
     } = req.body;
+
     const { id }: any = req.params;
 
     const GroupRepository = getRepository(Group);
 
-    const group = await GroupRepository.findOne({ name: groupName });
+    const groupIsFind = await GroupRepository.findOne({ name: group });
 
-    if (!group && groupName) {
+    if (!groupIsFind && group) {
       return res.status(400).json('Check if providers or group exist');
     }
 
@@ -136,10 +158,24 @@ export default class Product {
       return res.status(400).json('The product does not exist');
     }
 
-    await ProductsRepository.update(id, req.body);
+    const ImageRepository = getRepository(Image);
+
+    if (req.file) {
+      // eslint-disable-next-line no-undef
+      const { path } = req.file as Express.Multer.File;
+      await ImageRepository.update({ product: id }, { url: path });
+    }
+
+    if (JSON.stringify(req.body) !== '{}') {
+      await ProductsRepository.update(id, JSON.parse(JSON.stringify(req.body)));
+    }
 
     const product = await ProductsRepository.findOne(id, {
       relations: ['group', 'provider', 'images'],
+      order: {
+        actived: 'DESC',
+        name: 'ASC',
+      },
     });
 
     if (!product) {
